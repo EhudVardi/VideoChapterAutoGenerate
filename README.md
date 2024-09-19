@@ -21,6 +21,7 @@ Alternatively, on windows you can simply drag a video file onto the script file,
 # Results
 If all runs correctly, a new mkv video file will be created at the same folder as the input file, as well as an xml chapters file that contains the detected chapters.
 the xml file can be manually edited with "mkvtoolnix" to fine tune the results and re-generate the mkv file.
+The chapters can be viewed and jump to by many video players. For me it seems that PotPlayer was the best one. it can show the chapters timestamp on the timeline scroll line.
 
 # Modifying the Code
 Possibly split the script into two steps. First will generate the chapters xml, which is then manually edited by the user.
