@@ -94,9 +94,11 @@ def main(video_file, scene_detection_threshold):
     scene_changes_file = "scene_changes.txt"
     try:
         # Step 1: Run ffmpeg to detect scene changes
+        print("Running scene detection..")
         run_ffmpeg_scene_detection(video_file, scene_changes_file, scene_detection_threshold)
 
         # Step 2: Extract timestamps from the scene_changes.txt file
+        print("Extracting timestamps..")
         timestamps = extract_timestamps(scene_changes_file)
         
         if not timestamps:
@@ -105,19 +107,22 @@ def main(video_file, scene_detection_threshold):
             exit(1)
 
         # Step 3: Generate XML chapter file
+        print("Generating chapters xml file..")
         chapters_xml_filename = os.path.splitext(video_file)[0] + ".xml"
         chapters_xml = generate_chapter_xml(timestamps, chapters_xml_filename)
 
         # Step 4: Use MKVToolNix to create a new MKV file with chapters
+        print("Embedding detected chapters into a new mkv video file..")
         output_video = os.path.splitext(video_file)[0] + "_with_chapters.mkv"
         create_mkv_with_chapters(video_file, chapters_xml, output_video)
 
     finally:
         # Cleanup the scene_changes.txt file after processing
+        print("Cleaning up..")
         cleanup([scene_changes_file])
 
 def exit(status=0):
-    input("Program ended with status {status}.\nPress Enter to exit...")
+    input(f'Program ended with status {status}\nPress Enter to exit...')
     sys.exit(status)
 
 if __name__ == "__main__":
@@ -131,6 +136,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 3:
         scene_detection_threshold = sys.argv[2]
         
+    print(f"Executing on input file '{video_file}' with threshold {scene_detection_threshold}.")
     main(video_file, scene_detection_threshold)
     
     exit(0)
