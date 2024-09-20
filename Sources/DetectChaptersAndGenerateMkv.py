@@ -14,7 +14,7 @@ def run_ffmpeg_scene_detection(video_file, scene_changes_file):
     except subprocess.CalledProcessError as e:
         print(f"Error running ffmpeg: {e}")
         cleanup([scene_changes_file])
-        sys.exit(1)
+        exit(1)
 
 def extract_timestamps(scene_changes_file):
     """Extract timestamps from ffmpeg scene detection output"""
@@ -73,7 +73,7 @@ def create_mkv_with_chapters(input_video, chapters_xml, output_video):
     except subprocess.CalledProcessError as e:
         print(f"Error running mkvmerge: {e}")
         cleanup([chapters_xml])
-        sys.exit(1)
+        exit(1)
 
 def cleanup(files_to_remove):
     """Deletes temporary files if they exist"""
@@ -89,7 +89,7 @@ def main(video_file):
     # Ensure video file exists
     if not os.path.exists(video_file):
         print(f"Error: Video file '{video_file}' not found.")
-        sys.exit(1)
+        exit(1)
 
     scene_changes_file = "scene_changes.txt"
     try:
@@ -102,7 +102,7 @@ def main(video_file):
         if not timestamps:
             print("No scene changes detected.")
             cleanup([scene_changes_file])
-            sys.exit(1)
+            exit(1)
 
         # Step 3: Generate XML chapter file
         chapters_xml = generate_chapter_xml(timestamps)
@@ -115,10 +115,16 @@ def main(video_file):
         # Cleanup the scene_changes.txt file after processing
         cleanup([scene_changes_file])
 
+def exit(status=0):
+    input("Program ended with status {status}.\nPress Enter to exit...")
+    sys.exit(status)
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python scene_detection_to_chapters.py <video_file>")
-        sys.exit(1)
+        exit(1)
 
     video_file = sys.argv[1]
     main(video_file)
+    
+    exit(0)
