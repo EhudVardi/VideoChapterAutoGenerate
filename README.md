@@ -1,3 +1,4 @@
+
 # Description
 This software is meant to automatically generate chapters of a given video, achieved using a scene change detection tools.
 
@@ -15,8 +16,14 @@ Finally, the script calls "mkvtoolnix" via command line to generate a new mkv vi
 
 # How to run
 Simply execute the script file, giving it the input file absolute path as argument.
-'DetectChaptersAndGenerateMkv.py input_video_file.mp4'
+
+    DetectChaptersAndGenerateMkv.py input/file/full/path/input_video_file.mp4
+
 Alternatively, on windows you can simply drag a video file onto the script file, which will do exactly the same thing
+
+Also, its possible to specify the scene detection threshold by sending it after the first argument. (if not specified, the default is 0.3)
+
+    DetectChaptersAndGenerateMkv.py input/file/full/path/input_video_file.mp4 scene_detection_threshold
 
 # Results
 If all runs correctly, a new mkv video file will be created at the same folder as the input file, as well as an xml chapters file that contains the detected chapters.
