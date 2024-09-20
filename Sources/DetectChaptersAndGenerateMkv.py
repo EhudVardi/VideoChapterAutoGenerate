@@ -3,9 +3,9 @@ import re
 import sys
 import os
 
-def run_ffmpeg_scene_detection(video_file, scene_changes_file):
+def run_ffmpeg_scene_detection(video_file, scene_changes_file, scene_detection_threshold):
     """Runs ffmpeg to detect scene changes and stores them in 'scene_changes.txt'"""
-    ffmpeg_command = f'ffmpeg -i "{video_file}" -vf "select=\'gt(scene,0.3)\',showinfo" -f null - 2>&1 | findstr showinfo > {scene_changes_file}'
+    ffmpeg_command = f'ffmpeg -i "{video_file}" -vf "select=\'gt(scene,{scene_detection_threshold})\',showinfo" -f null - 2>&1 | findstr showinfo > {scene_changes_file}'
     
     # Run the ffmpeg command
     try:
@@ -85,7 +85,7 @@ def cleanup(files_to_remove):
             except OSError as e:
                 print(f"Error deleting {file}: {e}")
 
-def main(video_file):
+def main(video_file, scene_detection_threshold):
     # Ensure video file exists
     if not os.path.exists(video_file):
         print(f"Error: Video file '{video_file}' not found.")
@@ -94,7 +94,7 @@ def main(video_file):
     scene_changes_file = "scene_changes.txt"
     try:
         # Step 1: Run ffmpeg to detect scene changes
-        run_ffmpeg_scene_detection(video_file, scene_changes_file)
+        run_ffmpeg_scene_detection(video_file, scene_changes_file, scene_detection_threshold)
 
         # Step 2: Extract timestamps from the scene_changes.txt file
         timestamps = extract_timestamps(scene_changes_file)
@@ -122,10 +122,15 @@ def exit(status=0):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python scene_detection_to_chapters.py <video_file>")
+        print("Usage: python scene_detection_to_chapters.py <video_file> (op)<scene_detection_threshold>")
         exit(1)
 
     video_file = sys.argv[1]
-    main(video_file)
+    
+    scene_detection_threshold = 0.3 # default threshold
+    if len(sys.argv) == 3:
+        scene_detection_threshold = sys.argv[2]
+        
+    main(video_file, scene_detection_threshold)
     
     exit(0)
