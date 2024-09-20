@@ -105,7 +105,8 @@ def main(video_file):
             exit(1)
 
         # Step 3: Generate XML chapter file
-        chapters_xml = generate_chapter_xml(timestamps)
+        chapters_xml_filename = os.path.splitext(video_file)[0] + ".xml"
+        chapters_xml = generate_chapter_xml(timestamps, chapters_xml_filename)
 
         # Step 4: Use MKVToolNix to create a new MKV file with chapters
         output_video = os.path.splitext(video_file)[0] + "_with_chapters.mkv"
