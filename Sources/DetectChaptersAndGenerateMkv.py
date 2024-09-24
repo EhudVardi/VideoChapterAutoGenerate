@@ -92,29 +92,35 @@ def main(video_file, scene_detection_threshold):
         exit(1)
 
     scene_changes_file = "scene_changes.txt"
+    video_file_no_ext = os.path.splitext(video_file)[0]
+    chapters_xml_filename = video_file_no_ext + ".xml"
+    
     try:
-        # Step 1: Run ffmpeg to detect scene changes
-        print("Running scene detection..")
-        run_ffmpeg_scene_detection(video_file, scene_changes_file, scene_detection_threshold)
+        # Check if chapters XML already exists
+        if os.path.exists(chapters_xml_filename):
+            print(f"Chapters XML file '{chapters_xml_filename}' already exists. Skipping scene detection.")
+        else:
+            # Step 1: Run ffmpeg to detect scene changes
+            print("Running scene detection..")
+            run_ffmpeg_scene_detection(video_file, scene_changes_file, scene_detection_threshold)
 
-        # Step 2: Extract timestamps from the scene_changes.txt file
-        print("Extracting timestamps..")
-        timestamps = extract_timestamps(scene_changes_file)
-        
-        if not timestamps:
-            print("No scene changes detected.")
-            cleanup([scene_changes_file])
-            exit(1)
+            # Step 2: Extract timestamps from the scene_changes.txt file
+            print("Extracting timestamps..")
+            timestamps = extract_timestamps(scene_changes_file)
+            
+            if not timestamps:
+                print("No scene changes detected.")
+                cleanup([scene_changes_file])
+                exit(1)
 
-        # Step 3: Generate XML chapter file
-        print("Generating chapters xml file..")
-        chapters_xml_filename = os.path.splitext(video_file)[0] + ".xml"
-        chapters_xml = generate_chapter_xml(timestamps, chapters_xml_filename)
+            # Step 3: Generate XML chapter file
+            print("Generating chapters XML file..")
+            chapters_xml = generate_chapter_xml(timestamps, chapters_xml_filename)
 
         # Step 4: Use MKVToolNix to create a new MKV file with chapters
-        print("Embedding detected chapters into a new mkv video file..")
-        output_video = os.path.splitext(video_file)[0] + "_with_chapters.mkv"
-        create_mkv_with_chapters(video_file, chapters_xml, output_video)
+        print("Embedding chapters into a new MKV video file..")
+        output_video = video_file_no_ext + "_with_chapters.mkv"
+        create_mkv_with_chapters(video_file, chapters_xml_filename, output_video)
 
     finally:
         # Cleanup the scene_changes.txt file after processing
